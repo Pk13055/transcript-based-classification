@@ -1,3 +1,3 @@
-[submodule "src/hate-speech-and-offensive-language"]
-	path = src/hate-speech-and-offensive-language
+[submodule "src/offensive-detector"]
+	path = src/offensive-detector
 	url = https://github.com/t-davidson/hate-speech-and-offensive-language.git

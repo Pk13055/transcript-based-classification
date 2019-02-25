@@ -10,6 +10,9 @@ vadersentiment = "*"
 textstat = "*"
 nltk = "*"
 pandas = "*"
+youtube-dl = "*"
+pycaption = "*"
+requests = "*"
 
 [dev-packages]
 jupyter = "*"
