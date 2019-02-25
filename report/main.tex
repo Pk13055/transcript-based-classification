@@ -92,15 +92,45 @@ a weighted average will judge the videos overall scores.
 % Annotation process and ground truth collection
 \section{Annotation and labeling}
 
+The first step in the pipeline is the data collection and annotation. It is important to keep in mind the divisons
+and genre distribution amidst children and have a dataset representative of that. We are collecting 5 videos in each positive category,
+approximately of 5 minutes each, unless the genre specifies (eg, vlogs are usually longer). The videos should be at such an age genre balance
+that younger children usually are pressured into by peers, and boundary videos are easy gateways to explicit content. \\
+
+This gives us a total of 4 categories of positive videos, for each age group bracket within kids, targetting most common videos in the given set.
+
+$$
+N = n_{videos} \times n_{categories} \times n_{age groups} \times m \times \delta \times \alpha
+$$
+
+Here $n_{videos}$ is 5 per category, $n_{age groups}$ is 3, $m$ being the average length per video of selection. Now the average rate of speech
+is $\delta$. This may vary across various demographics, but we choose the global average, 110 words per minute. Let's assume, since we are targetting
+positive samples to seed the dataset, there is a 20\% conversion rate, $\alpha$. This means that 1 minute in a positive truth, 5 minute video contains
+positive samples of the content we're trying to flag. This is a fair assumption, and goes in line with average statistics \citep{videostats}.
+
+Once this data is labeled, we're ready to pass it to the speech tagging and sentence marking - both statistics and performance with training as well
+as well as pre-trained weights has been discussed. This will tag the basic parts of the speech and mark the transcript with labels.
 
 % Transcript feature extraction - POS/NP tagging to categories
 \section{Speech Classification}
 
+The network that has been used to analyze and tag setence and n-grams as potentially unsafe is discussed below. Because of the relatively simpler nature
+of detection of unsafeness for children (false positives are beneficial if anything), it is based on majorly classical methods and does not do anything
+fancy \citep{bilstm} Bi-LSTM based methods. However, a comparison to such methods as the core model has also been added for brevity. \\
+
+The speech classification module can be broken down into basic components:
+\begin{itemize}
+    \item{}
+\end{itemize}
+
 % Overall video classification on basis of transcript clustering
 \section{Zonal clustering and overall classification}
 
+% Results at the end
+\section{Results}
+
 % Success rate and scalable component
-\section{Conclusion}
+\section{Conclusion \& further work}
 
 \bibliographystyle{plain}
 \bibliography{references}

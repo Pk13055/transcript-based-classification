@@ -2,12 +2,9 @@
 
 In a typical day, children consume just over three hours of media. This includes computer use, cell phone use, tablet use, music, and reading. Two thirds of this time is spent with “screen media” (TV, computers, the Internet, etc.) while reading is less than 20 minutes per day.
 
-
 The time spent with on screen media dramatically increases from the toddler to preschool to school-age years. Children under two have a screen time average of 53 minutes per day. This increases to almost two and a half hours per day among two to four year old and almost three hours for kids in the five to eight year old range.
 
-
 Although the use of computers, the internet, and electronic devices are steadily increasing among children, television remains the type of media that children spend the most time with. Sixty-five percent of children under eight years old watch television daily. On average, they spend about an hour and a half (100 minutes to be exact) watching TV every day.
-
 
 As a group, children under eight spend an average of 25 minutes per day playing video games.
 66% of all children under the age of two have watched television.
@@ -34,5 +31,3 @@ By age eight, 96% of children have watched TV, 90% have used a computer, 81% hav
   that to higher safety shows
 - [These](https://digiday.com/media/demographics-youtube-5-charts/) are the watching habits for elder and senior genres and wider datasets. Higher chance that unsafe videos may exist amongst categories that transcend age group.
 
-- [Core
-  implementation](https://github.com/t-davidson/hate-speech-and-offensive-language/blob/master/classifier/final_classifier.ipynb)
