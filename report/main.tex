@@ -120,17 +120,44 @@ fancy \citep{bilstm} Bi-LSTM based methods. However, a comparison to such method
 
 The speech classification module can be broken down into basic components:
 \begin{itemize}
-    \item{}
+    \item{Processing and tokenization}
+    \item{Feature extraction and supplementing}
+    \item{Regression \& Other feature extraction}
 \end{itemize}
+
+% TODO: add subsections with basic information from the classical method
 
 % Overall video classification on basis of transcript clustering
 \section{Zonal clustering and overall classification}
 
+Once we have the features extracted and a model trained on the existing dataset, we can start to map out a
+heatmap of the video timeline so indicate zones of high unsafe-ness clustered on the basis of categories.
+Once these zones are established in the video, we can supplement it with additional release information
+and setup an unsupervised secondary pipeline, one that now on the basis of the various genre clusters within a video,
+an overall unsafeness score and probability is given on the basis of the intravideo analysis.
+
+% TODO: fill in this part of the pipeline once the speech classification part is done
+
 % Results at the end
 \section{Results}
 
+% The pipeline has two parts:
+% - Inter sentence detection: Detect unsafe parts of the video and cluster on the
+% basis of genre spread
+%   - Test on bi-LSTM pre-trained
+%   - twitter model pretrained
+%   - Custom feature twitter model
+% - Video zonal clustering and analysis: Now depending on each section labeled, assign
+% an overall score to the video with a rough genre distribution
+
 % Success rate and scalable component
 \section{Conclusion \& further work}
+
+% TODO: on the basis of the results fill this part in
+% - What were the success rates for each part and scores for each.
+% - Method finally chosen and final output of the network
+% - Current issues and improvements that can be made
+% - Future addendum: additional features to be added
 
 \bibliographystyle{plain}
 \bibliography{references}
