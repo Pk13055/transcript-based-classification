@@ -13,6 +13,7 @@ pandas = "*"
 youtube-dl = "*"
 pycaption = "*"
 requests = "*"
+tables = "*"
 
 [dev-packages]
 jupyter = "*"
