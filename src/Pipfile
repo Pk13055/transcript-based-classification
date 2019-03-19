@@ -14,6 +14,12 @@ youtube-dl = "*"
 pycaption = "*"
 requests = "*"
 tables = "*"
+numpy = "*"
+matplotlib = "*"
+seaborn = "*"
+tensorflow = "==1.9"
+unidecode = "*"
+gensim = "*"
 
 [dev-packages]
 jupyter = "*"
