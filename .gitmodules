@@ -1,6 +1,6 @@
-[submodule "src/models/offensive-detector"]
-	path = src/models/offensive-detector
-	url = https://github.com/t-davidson/hate-speech-and-offensive-language.git
 [submodule "src/models/ensemble-detector"]
 	path = src/models/ensemble-detector
 	url = https://github.com/quinnbp/WT2018.git
+[submodule "src/models/offensive-detector"]
+	path = src/models/offensive-detector
+	url = https://github.com/t-davidson/hate-speech-and-offensive-language.git
