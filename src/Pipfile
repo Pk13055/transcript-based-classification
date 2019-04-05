@@ -20,9 +20,12 @@ seaborn = "*"
 tensorflow = "==1.9"
 unidecode = "*"
 gensim = "*"
+selenium = "*"
 
 [dev-packages]
 jupyter = "*"
+xlrd = "*"
+openpyxl = "*"
 
 [requires]
 python_version = "3.6"
