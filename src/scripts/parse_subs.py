@@ -64,7 +64,7 @@ def get_trans(idx, path: str) -> list:
     trans = [raw[start:stop] for start, stop in zip(idxs, idxs[1:])]
     trans = [[idx, int(_[0]),
               *convert(_[1].strip(' ').split(' --> ')),
-              clean(''.join(_[2:]))] for _ in trans]
+              clean(' '.join(_[2:]))] for _ in trans]
     return trans
 
 
