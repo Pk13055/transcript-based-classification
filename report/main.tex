@@ -1,15 +1,23 @@
-\documentclass{article}
+\documentclass{article}[A4]
 
 % packages used
+\usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{amsmath}
 \usepackage{natbib}
 \usepackage{hyperref}
 \usepackage{graphicx}
 
+\hypersetup{
+    colorlinks=false,
+}
+\urlstyle{same}
+
 % meta information
 \title{Detecting child unsafe videos using transcripts}
 \author{Shritishma Reddy \& Pratik Kamble}
-\date{February, 17th 2019}
+\date{April, 16th 2019}
 
 \begin{document}
 \maketitle
@@ -51,7 +59,7 @@ a dataset representative mainly of TV show content, followed by YouTube and last
 
 Luckily, all video footage from various sources can be obtained from YouTube, along with transcript
 data. TV show snippets, actual online vlog and other consumable media, as well as video game footage
-can be found on the streaming platform.
+can be found on the streaming platform. \\
 
 \subsection{Unsafe Pattern Detection}
 
@@ -59,7 +67,7 @@ Once we have the annotated data, we have to run through it and classify accordin
 criterion that is of importance is categories that may influence minds may be quite different from ones
 for adolescents or adults.
 
-\begin{figure}
+\begin{figure}[!htb]
     \centering
     \includegraphics[scale=0.25]{graphic_stats.jpg}
     \caption{Major content sources and distribution}
@@ -78,7 +86,6 @@ found on these sites, the main type of genres are as follows: \\
     \item{Other offensive terminology: Dealing with kids in the lower age bracket, systems need not worry too much about false positives,
     because of the ease of influence of media on early youth.}
 \end{itemize}
-
 
 \subsection{Video Classification}
 
@@ -108,56 +115,105 @@ is $\delta$. This may vary across various demographics, but we choose the global
 positive samples to seed the dataset, there is a 20\% conversion rate, $\alpha$. This means that 1 minute in a positive truth, 5 minute video contains
 positive samples of the content we're trying to flag. This is a fair assumption, and goes in line with average statistics \citep{videostats}.
 
-Once this data is labeled, we're ready to pass it to the speech tagging and sentence marking - both statistics and performance with training as well
-as well as pre-trained weights has been discussed. This will tag the basic parts of the speech and mark the transcript with labels.
+\subsection{Raw Transcript Collection}
 
-% Transcript feature extraction - POS/NP tagging to categories
-\section{Speech Classification}
+After aggregating the various sources of media and content, our dataset consisted of 60 video subtitle files (*.srt). These files were formatted using the srt standard and had to be converted into a `DataFrame` for annotation. After cleaning invalid records and repeat rows, we were left with around 7000 observations.
 
-The network that has been used to analyze and tag setence and n-grams as potentially unsafe is discussed below. Because of the relatively simpler nature
-of detection of unsafeness for children (false positives are beneficial if anything), it is based on majorly classical methods and does not do anything
-fancy \citep{bilstm} Bi-LSTM based methods. However, a comparison to such methods as the core model has also been added for brevity. \\
+\subsection{SRT Parsing and Dataset Aggregation}
 
-The speech classification module can be broken down into basic components:
+Once we had a collection of formatted transcripts, they had to be aggregated and labeled. Each record of the dataset is of the form:
+\begin{verbatim}
+	id  		genre  idx  start    end text 
+0  3tgZ...      0    1   0.00   3.71  mr. mine you say babe ...
+1  3tgZ...      0    3   3.72  22.79  mr. mine babe what's d...
+2  3tgZ...      0    4  22.79  22.80  of a dynamic punch mr. line 
+3  3tgZ...      0    5  22.80  28.40  of a dynamic punch you'll... 
+4  3tgZ...      0    6  28.40  28.41  you'll get stronger your 
+\end{verbatim}
+
+Every sample has a start and end marker, the genre for the video, and other meta information (as seen above). The timestamps and genre will help correlate the overall accuracy of the system with certain trends and patterns across genres. Additionally, some inference can be drawn as to the average "unsafe" duration of a video and the subsequent variation with genres. \\
+
+Now, this annotated data is passed onto the model. The preliminary embedding and tagging of every sentence of a video is handled by the same. The results from said model are then passed onto an aggregator; it takes into account sentence based transcript data, augments it with additional meta information about the video and then makes a prediction regarding the safety of the video in terms of child consumption.
+
+% Tagging of every sentence
+\section{Model - Sentence labeling}
+
+The model choice we ultimately went with was a bi-LSTM model with a simple embedding layer (from Keras). We used sequence model architectures i.e., BLSTM with character grams as inputs for training. BLSTM and LSTM models usually consists of three sequential layers:
 \begin{itemize}
-    \item{Processing and tokenization}
-    \item{Feature extraction and supplementing}
-    \item{Regression \& Other feature extraction}
+	\item{Embedding Layer}
+	\item{Bidirectional LSTM}
+	\item{Fully Connected Layer}
 \end{itemize}
 
-% TODO: add subsections with basic information from the classical method
+To compare the benefits of this model against other classical/hybrid approaches, we pre trained all our models on the Davidson hate speech dataset \citep{hateoffensive}. Across the board, the accuracy of the chosen model was better than all other models considered (\textit{a comparitive analysis has been provided in the \textbf{results} section.}) A small improvement to the pipeline could be considered at this stage, viz. an ensemble approach with a mix of this bi-lstm model and a more classical approach.
+
+\subsection{Structure}
+
+
+\begin{itemize}
+	\item{To deal with complex structured conversation data, we plan to use word level trigrams to represent each conversation.}
+	\item{Sequence of trigrams sent through an embedding layer which takes one-hot vector of each character trigram in the sentence and learns the lower dimension representation for it.}
+\end{itemize}
+
+\subsection{Functionality \& Reasoning}
+
+\begin{itemize}
+	\item{Bi-Directional LSTMs have the ability to capture much richer sequential patterns from both directions of a sequence.}
+	\item{Each character trigram from the previous embedding layer is fed as a sequence of trigrams, to the BLSTM layer.}
+	\item{The output of the BLSTM layer is given as input to a Fully Connected (FC) layer which models the interactions between these features.}
+	\item{The final softmax node in the FC layer outputs the probability of the sentence belonging to the inappropriate class.}
+\end{itemize}
+
+\subsection{Initial testing \& results}
+
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[scale=0.50]{model_results.png}
+    \caption{bi-LSTM training}
+    \label{fig:model_res}
+\end{figure}
+
+The initial training and validation was done on the Davidson dataset. This model gave excellent results, resulting in over 95\% training accuracy and over 80\% test accuracy on the baseline dataset. Results on the test dataset and comparison across all models is presented in the \textit{results} section.
 
 % Overall video classification on basis of transcript clustering
 \section{Zonal clustering and overall classification}
 
-Once we have the features extracted and a model trained on the existing dataset, we can start to map out a
-heatmap of the video timeline so indicate zones of high unsafe-ness clustered on the basis of categories.
-Once these zones are established in the video, we can supplement it with additional release information
-and setup an unsupervised secondary pipeline, one that now on the basis of the various genre clusters within a video,
-an overall unsafeness score and probability is given on the basis of the intravideo analysis.
+All the transcript data has been labeled as follows:
+\begin{itemize}
+\item {$\begin{bmatrix}1 & 0 & 0\end{bmatrix}$ Abusive}
+\item {$\begin{bmatrix}0 & 1 & 0\end{bmatrix}$ Hate}
+\item {$\begin{bmatrix}1 & 1 & 0\end{bmatrix}$ Abusive + Hate}
+\item {$\begin{bmatrix}0 & 0 & 1\end{bmatrix}$ Clean}
+\end{itemize}
 
-% TODO: fill in this part of the pipeline once the speech classification part is done
+This data is then mapped into a timeline heat map to indicate stronger zones of the video that may be unsafe. As part of the further work, this is the step wherein more meta information, age group, region, etc would be added so as to provide a better guess as part of the second phase (\textit{something like an additional FC layer, with the transcript heatmap as a feature subset}). \\
+
+Now, as part of the first post processing step, we take the labeled video timeline and calculate the percentage of the video that's "unsafe". This is then cross-referenced with the genre based averages and an appropriate genre is determined. Once this part has been done, each genre has a statical threshold for it's unsafeness (again, precalculated). If the video then falls beyond such a threshold then, it is classified as unsafe. Additionally, it is run across other averages as well, and a score is given depending on the sensitivity of the system (\textit{higher sensitivity would lead to more false positives}). \\
+
+These are then the final labels that are taken into account. As part of the results section, we have compared the end-to-end accuracy with ground truth obtained from manual viewing and judgment.
 
 % Results at the end
 \section{Results}
 
-% The pipeline has two parts:
-% - Inter sentence detection: Detect unsafe parts of the video and cluster on the
-% basis of genre spread
-%   - Test on bi-LSTM pre-trained
-%   - twitter model pretrained
-%   - Custom feature twitter model
-% - Video zonal clustering and analysis: Now depending on each section labeled, assign
-% an overall score to the video with a rough genre distribution
+\subsection{Data preparation \& model training}
+
+\subsection{Final Choice \& Testing}
+
+\subsection{Pipeline results}
 
 % Success rate and scalable component
 \section{Conclusion \& further work}
 
-% TODO: on the basis of the results fill this part in
-% - What were the success rates for each part and scores for each.
-% - Method finally chosen and final output of the network
-% - Current issues and improvements that can be made
-% - Future addendum: additional features to be added
+Given the two step process of "classification", some interesting results can be drawn. From the dataset that we collected, we noticed:
+% TODO: add information here about the final classifications and other interesting patterns
+
+\subsection{Further Work}
+
+Thus, with the classification methods of the bi-lstm model with a combination of the classical method should give us the best performance. Additionally, information from the classical method can be used in the later clustering and analysis step. A later step is to provide a finer analysis of the type of content and possibly give an appropriate age rating, though this might require some additional work. \\
+
+Another improvement on the to-do list is to supplement the timeline information with more features, say region and appropriate age group. This way, an online learning model would be able to learn trends in consumption behaviour and auto-adjust to regional trends and filtering.
+
+You can find the complete codebase, along with some helpful scripts on \href{https://github.com/Pk13055/transcript-based-classification}{GitHub}. Feel free to contribute and request features!
 
 \bibliographystyle{plain}
 \bibliography{references}
