@@ -21,6 +21,7 @@ tensorflow = "==1.9"
 unidecode = "*"
 gensim = "*"
 selenium = "*"
+keras-tqdm = "*"
 
 [dev-packages]
 jupyter = "*"
