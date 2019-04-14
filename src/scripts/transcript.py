@@ -14,11 +14,9 @@ from multiprocessing import Pool
 from random import shuffle
 from time import time
 
-from pycaption import WebVTTReader, base
+from pycaption import WebVTTReader
 import pandas as pd
-import requests
 import youtube_dl
-
 
 ydl_opts = {
     'subtitlesformat': 'vtt',
