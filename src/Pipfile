@@ -20,13 +20,15 @@ seaborn = "*"
 tensorflow = "==1.9"
 unidecode = "*"
 gensim = "*"
-selenium = "*"
-keras-tqdm = "*"
+pydot = "*"
 
 [dev-packages]
+keras-tqdm = "*"
+selenium = "*"
 jupyter = "*"
 xlrd = "*"
 openpyxl = "*"
+glove-python = "*"
 
 [requires]
 python_version = "3.6"
