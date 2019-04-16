@@ -143,15 +143,19 @@ def generate_results(data: pd.DataFrame, verbose: bool=True) -> None:
     heatmap = heatmap[np.newaxis, :].repeat(width, axis=0)
 
     import matplotlib.pyplot as plt
-    fig = plt.figure(figsize=(16, 32))
-    fig.add_subplot(1, 2, 1)
+    fig = plt.figure(figsize=(15,15))
+#fig.add_subplot(1, 2, 1)
     categories.plot(kind='bar')
     plt.title("Frequency Distribution")
-    fig.add_subplot(1, 2, 2)
+    plt.savefig('hatef.png')
+    plt.show()
+    fig = plt.figure(figsize=(15,15))
+#   fig.add_subplot(1, 2, 2)
     plt.imshow(heatmap, cmap='gray')
     plt.title("Content Distribution")
     plt.xticks(range(0, 1000, 20), np.linspace(data.start.min(), data.end.max(), 50).astype('int'), rotation=90)
     plt.xlabel('seconds')
+    plt.savefig('hate.png')
     plt.show()
 
 

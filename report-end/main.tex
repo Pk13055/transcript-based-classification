@@ -117,7 +117,7 @@ positive samples of the content we're trying to flag. This is a fair assumption,
 
 \subsection{Raw Transcript Collection}
 
-After aggregating the various sources of media and content, our dataset consisted of 60 video subtitle files (*.srt). These files were formatted using the srt standard and had to be converted into a `DataFrame` for annotation. After cleaning invalid records and repeat rows, we were left with around 7000 observations.
+After aggregating the various sources of media and content, our dataset consisted of 60 video subtitle files (*.srt). We have used a multi-threaded procedure to get transcripts for our videos. This saved a lot of time in video collection. These files were formatted using the srt standard and had to be converted into a `DataFrame` for annotation. After cleaning invalid records and repeat rows, we were left with around 7000 observations. 
 
 \subsection{SRT Parsing and Dataset Aggregation}
 
@@ -134,7 +134,13 @@ Once we had a collection of formatted transcripts, they had to be aggregated and
 Every sample has a start and end marker, the genre for the video, and other meta information (as seen above). The timestamps and genre will help correlate the overall accuracy of the system with certain trends and patterns across genres. Additionally, some inference can be drawn as to the average "unsafe" duration of a video and the subsequent variation with genres. \\
 
 Now, this annotated data is passed onto the model. The preliminary embedding and tagging of every sentence of a video is handled by the same. The results from said model are then passed onto an aggregator; it takes into account sentence based transcript data, augments it with additional meta information about the video and then makes a prediction regarding the safety of the video in terms of child consumption.
-
+\subsubsection{Youtube Dataset Statistics:}
+\begin{itemize}
+	\item{77\% of our dataset is "Clean".}
+	\item{12\% of our dataset is "Abusive"}
+	\item{11\% of our dataset is "Hate"}
+	\item{Average running time of videos in our dataset is 4.5 mins.}
+\end{itemize}
 % Tagging of every sentence
 \section{Model - Sentence labeling}
 
@@ -167,7 +173,7 @@ To compare the benefits of this model against other classical/hybrid approaches,
 
 
 The initial training and validation was done on the Davidson dataset. This model gave excellent results, resulting in 99\% training accuracy and 89\% test accuracy on the baseline dataset. Results on the test dataset and comparison across all models is presented in the \textit{results} section.
-
+\pagebreak[4]
 % Overall video classification on basis of transcript clustering
 \section{Zonal clustering and overall classification}
 
@@ -175,7 +181,6 @@ All the transcript data has been labeled as follows:
 \begin{itemize}
 \item {$\begin{bmatrix}1 & 0 & 0\end{bmatrix}$ Abusive}
 \item {$\begin{bmatrix}0 & 1 & 0\end{bmatrix}$ Hate}
-\item {$\begin{bmatrix}1 & 1 & 0\end{bmatrix}$ Abusive + Hate}
 \item {$\begin{bmatrix}0 & 0 & 1\end{bmatrix}$ Clean}
 \end{itemize}
 
@@ -190,8 +195,8 @@ These are then the final labels that are taken into account. As part of the resu
 
 \subsection{Data preparation \& model training}
 \subsubsection{Data preparation}
-We have used Davidson dataset and 20\% of data corresponding to each label of our YouTube dataset for training. The Davidson dataset primarily consists of tweets. Hence, urls, hashtags, punctuation, user mentions etc are removed initially.
- All the sentences are then lemmatized and stemmed. Stopwords are also removed from all the sentences. Since, we are using a tfidf based tokeniser, removing stop words improves the rank of relevant words in the tokeniser. We use this clean data to train our tokeniser.
+We have used Davidson dataset and 20\% of data corresponding to each label of our YouTube dataset for training. The Davidson dataset is highly biased towards abusive data and contains very less hate and clean data. In order to make our training dataset bias free, we use about 4500 clean, 2000 hate and 1500 abusive sentences. Since,clean sentences are not as structured as hate and abusive sentences, we use higher proportion of clean data as compared to the other two classes.
+The Davidson dataset primarily consists of tweets. Hence, urls, hashtags, punctuation, user mentions etc are removed initially. All the sentences are then lemmatized and stemmed. Stopwords are also removed from all the sentences. Since, we are using a tfidf based tokeniser, removing stop words improves the rank of relevant words in the tokeniser. We use this clean data to train our tokeniser.
  From the above preprocessed dataset, we take all the words and train a glove model and get glove embeddings for the words in our training data. 
 \subsubsection{Model Training}
 \\*
@@ -225,8 +230,17 @@ This model has been proposed by ?Automated Hate Speech Detection and the Problem
     \label{fig:model_res}
 \end{figure}
 \\*
+The accuracies of the classical model when tested on our dataset was around 20\%. The classical features fail to capture contextual data and sentence structure efficiently. 
+\\*
 \textbf{Bi-LSTM Model:}\\*
+\\* 
 \textbf{Model} 
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[scale=0.50]{model.png}
+    \caption{Architecture}
+    \label{fig:model_res}
+\end{figure}
 \begin{itemize}
 \item{We use an initial Embedding Layer to which we give our trained glove embeddings as weights. }
 \item{Bi-Directional LSTMs have the ability to capture much richer sequential patterns from both directions of a sequence.}
@@ -234,31 +248,36 @@ This model has been proposed by ?Automated Hate Speech Detection and the Problem
 \item{Then 2 Dense layers with appropriate drop out ratios are added sequentially.}
 \item{The final soft-max node in the FC layer outputs the probability of the sentence belonging to the inappropriate class}
 \end{itemize}
+
 \begin{figure}[!htb]
     \centering
-    \includegraphics[scale=0.50]{model.png}
-    \caption{Architecture}
+    \includegraphics[scale=0.50]{bilstm.png}
+    \caption{Accuracies}
     \label{fig:model_res}
 \end{figure}
 
+The accuracies of the bilstm model when tested on our dataset was around 84\%. 
 \subsection{Final Choice \& Testing}
+Since, the bilstm model performs better than the classical model, we proceed using the bilstm model for our final script.
+\subsection{Final Pipeline}
+The final script that we have written takes the youtube link as input and shows a histogram of distribution of abusive, hate and clean labels for all the transcripts extracted. It also outputs a final heat map showing distribution of abusive, hate and clean subtitles vs time.
+\subsubsection{Results}
+Legend for Heat Maps
+\begin{itemize}
+\item{Green-Clean}
+\item{Red-Abusive}
+\item{Blue-Hate}
+\end{itemize}
+\pagebreak[4]
 
-\subsection{Pipeline results}
 
 % Success rate and scalable component
-\section{Conclusion \& further work}
-
-Given the two step process of "classification", some interesting results can be drawn. From the dataset that we collected, we noticed:
-% TODO: add information here about the final classifications and other interesting patterns
-
+\section{Conclusion}
+Thus, with the classification methods of the bi-lstm model with a combination of the classical method gives us the best performance.
 \subsection{Further Work}
-
-Thus, with the classification methods of the bi-lstm model with a combination of the classical method should give us the best performance. Additionally, information from the classical method can be used in the later clustering and analysis step. A later step is to provide a finer analysis of the type of content and possibly give an appropriate age rating, though this might require some additional work. \\
-
-Another improvement on the to-do list is to supplement the timeline information with more features, say region and appropriate age group. This way, an online learning model would be able to learn trends in consumption behaviour and auto-adjust to regional trends and filtering.
-
-You can find the complete codebase, along with some helpful scripts on \href{https://github.com/Pk13055/transcript-based-classification}{GitHub}. Feel free to contribute and request features!
-
+Future work includes expanding the dataset. BERT Embeddings could be used in the model. Video frames can be collected and multi-modal analysis can be done to make our predictions more reliable. \cite{Thomas_book}.Metadata from Youtube can be collected and used for analysis too. 
 \bibliographystyle{plain}
-\bibliography{references}
+\begin{thebibliography}{unsrt}
+  \bibitem{Thomas_book}
+    Kaushal, R., Saha, S., Bajaj, P., Kumaraguru, P.: KidsTube: detection, characterization and analysis of child unsafe content & promoters on YouTube. In: 2016 14th Annual Conference on Privacy, Security and Trust (PST), pp. 157?164. IEEE (2016) \end{thebibliography}
 \end{document}
